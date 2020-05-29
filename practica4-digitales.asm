@@ -1,0 +1,839 @@
+.ORIG	x3000
+
+	LD	R0,MSGT
+	PUTS
+	BR 	SAL
+
+MSGT	  .FILL MSG
+
+COPYR7T	  .FILL COPYR7  
+
+COPYRR2T  .FILL COPYRR2  
+
+MIXT2	  .FILL MIX
+CADENAT	  .FILL	CADENA
+
+	LD	R2,CADENAT
+	AND 	R1,R1,#0
+	AND	R0,R0,#0
+	ADD	R1,R1,#6
+LOOP0	STR	R0,R2,#0
+	ADD	R2,R2,#1
+	ADD	R1,R1,#-1
+	BRp	LOOP0
+
+SAL	LD      R2,CADENAT
+	AND 	R1,R1,#0
+	ADD	R1,R1,#4
+	
+LOOP	GETC                    ;INGRESO UN TEXTO DE 16 BITS
+	STR	R0,R2,#0
+	ADD	R2,R2,#1
+	ADD	R1,R1,#-1
+	BRp	LOOP	
+
+	LD 	R0,CADENAT    
+	PUTS
+	
+	LD      R2,CADENAT
+	LDR	R5,R2,#0
+	JSR	FUN48
+	NOT	R4,R4
+	ADD	R4,R4,#1
+	ADD	R4,R4,R5
+	BRZ	CEN
+	JSR	FUN1000
+	STR	R4,R2,#5
+CEN	LDR	R5,R2,#1
+	JSR	FUN48
+	NOT	R4,R4
+	ADD	R4,R4,#1
+	ADD	R5,R4,R5
+	BRZ	DECEN
+	JSR	FUN100
+	AND	R6,R6,#0
+XI4	ADD	R6,R6,R4
+	ADD	R5,R5,#-1
+	BRP	XI4
+	LDR	R4,R2,#5
+	ADD	R4,R6,R4
+	STR	R4,R2,#5
+DECEN	LDR	R5,R2,#2
+	JSR	FUN48
+	NOT	R4,R4
+	ADD	R4,R4,#1
+	ADD	R5,R4,R5
+	BRZ	UNI
+	AND	R6,R6,#0
+XI5	ADD	R6,R6,#10
+	ADD	R5,R5,#-1
+	BRP	XI5
+	LDR	R4,R2,#5
+	ADD	R4,R6,R4
+	STR	R4,R2,#5	
+UNI	LDR	R5,R2,#3
+	JSR	FUN48
+	NOT	R4,R4
+	ADD	R4,R4,#1
+	ADD	R5,R4,R5
+	LDR	R4,R2,#5
+	ADD	R4,R5,R4
+	STR	R4,R2,#5	
+	
+	BR	SALTO
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+FUN1000	ST	R7,COPYR7T
+	JSR	FUN100
+	AND	R3,R3,#0
+	AND	R6,R6,#0
+	ADD	R6,R6,R4
+	AND	R4,R4,#0
+	ADD	R3,R3,#10
+XI2	ADD	R4,R4,R6
+	ADD	R3,R3,#-1
+	BRP	XI2
+	LD	R7,COPYR7T
+	RET
+
+FUN100 	ST	R7,COPYR7T
+	AND	R3,R3,#0
+	AND	R4,R4,#0
+	ADD	R3,R3,#10
+XI	ADD	R4,R4,#10
+	ADD	R3,R3,#-1
+	BRP	XI
+	LD	R7,COPYR7T
+	RET
+
+FUN48	ST	R7,COPYR7T
+	AND	R3,R3,#0
+	AND	R4,R4,#0
+	ADD	R3,R3,#6
+XI3	ADD	R4,R4,#8
+	ADD	R3,R3,#-1
+	BRP	XI3
+	LD	R7,COPYR7T
+	RET
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+ROTWORD		ST	R7,COPYR7T
+		LDR	R1,R2,#12
+		LDR	R3,R2,#13
+		LDR	R5,R2,#14
+		LDR	R6,R2,#15
+		STR	R1,R4,#3
+		STR     R3,R4,#0
+		STR	R5,R4,#1
+		STR	R6,R4,#2
+		LD	R7,COPYR7T
+		RET
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ADDROUNDKEY	ST	R7,COPYR7T
+		AND 	R0,R0,#0
+		ADD	R0,R0,#15
+		ADD	R0,R0,#1
+	LOOP2	JSR	XORD
+		STR	R1,R4,#0
+		ADD	R2,R2,#1
+		ADD	R4,R4,#1
+		ADD	R0,R0,#-1
+		BRp	LOOP2
+		LD	R7,COPYR7T
+		RET
+		
+COPYR7T2  .FILL COPYR72
+CODIGOT	  .FILL CODIGO
+CLAVEST	  .FILL CLAVES
+RCONT	  .FILL RCON
+
+XORD	ST	R7,COPYR7T2
+	LDR	R1,R2,#0
+	LDR	R5,R4,#0
+	AND	R3,R1,R5
+	NOT	R3,R3
+	AND	R1,R1,R3
+	NOT	R1,R1
+	AND	R5,R3,R5
+	NOT	R5,R5
+	AND	R1,R1,R5
+	NOT	R1,R1
+	LD	R7,COPYR7T2
+	RET
+
+XOR	ST	R7,COPYR7T
+	AND	R3,R1,R5
+	NOT	R3,R3
+	AND	R1,R1,R3
+	NOT	R1,R1
+	AND	R5,R3,R5
+	NOT	R5,R5
+	AND	R1,R1,R5
+	NOT	R1,R1
+	LD	R7,COPYR7T
+	RET
+
+XORC		ST	R7,COPYR7T
+		AND 	R0,R0,#0
+		ADD	R0,R0,#4
+	LOOPC2	JSR	XORD
+		STR	R1,R4,#0
+		ADD	R2,R2,#1
+		ADD	R4,R4,#1
+		ADD	R0,R0,#-1
+		BRp	LOOPC2
+		LD	R7,COPYR7T
+		RET
+
+XORCC		ST	R7,COPYR7T
+		ST	R2,COPYRR2T
+		AND 	R0,R0,#0
+		ADD	R0,R0,#4
+	LOOPCC2	JSR	XORD
+		STR	R1,R4,#4
+		ADD	R2,R2,#1
+		ADD	R4,R4,#1
+		ADD	R0,R0,#-1
+		BRp	LOOPCC2
+		LD	R2,COPYRR2T
+		LD	R7,COPYR7T
+		RET
+
+REEMPLAZO	ST	R7,COPYR7T
+		AND	R3,R3,#0
+		ADD	R3,R3,#15
+		ADD	R3,R3,#1
+		LD	R4,MIXT2
+	CLC2	LDR	R1,R4,#0
+		STR	R1,R2,#0
+		ADD	R2,R2,#1
+		ADD	R4,R4,#1
+		ADD	R3,R3,#-1
+		BRP	CLC2	
+		LD	R7,COPYR7T
+		RET
+CONSTAT	  .FILL	CONSTA
+TEXTOT		.FILL	TEXTO
+CLAVET	  .FILL CLAVE
+COPYR7T5  .FILL COPYR75 
+
+REEMPLAZO2	ST	R7,COPYR7T5
+		LD	R2,CODIGOT
+		AND	R1,R1,#0
+		ADD	R1,R1,#15
+		ADD	R1,R1,#1
+		NOT	R1,R1
+		ADD	R1,R1,#1
+		ADD	R3,R3,R1
+		BRN	NULO
+		AND	R3,R3,#0
+		ADD	R3,R3,#15
+		ADD	R3,R3,#1
+	CLC22	LDR	R1,R4,#0
+		STR	R1,R2,#0
+		ADD	R2,R2,#1
+		ADD	R4,R4,#1
+		ADD	R3,R3,#-1
+		BRP	CLC22
+		BR	FINZ	
+
+	NULO	NOT	R1,R1
+		ADD	R1,R1,#1
+		ADD	R1,R1,R3
+	CLC23	LDR	R5,R4,#0
+		STR	R5,R2,#0
+		ADD	R2,R2,#1
+		ADD	R4,R4,#1
+		ADD	R1,R1,#-1
+		BRP	CLC23
+		
+		NOT	R3,R3
+		ADD	R3,R3,#1
+		AND	R5,R5,#0
+	CLC24	STR	R5,R2,#0
+		ADD	R2,R2,#1
+		ADD	R4,R4,#1
+		ADD	R3,R3,#-1
+		BRP	CLC24
+		
+		
+	FINZ	LD	R7,COPYR7T5
+		RET
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+COPYRRR2T	.FILL	COPYRRR2T
+
+COPIAR2T	.FILL	COPIAR2
+COPIAR2T1	.FILL	COPIAR21
+COPIAR4T	.FILL	COPIAR4
+COPIAR4T1	.FILL	COPIAR41
+COPIAR0T	.FILL	COPIAR0
+COPIAR3T	.FILL	COPIAR3
+COPYR6T1	.FILL	COPYR61
+SBOXT        .FILL	SBOX
+R3FINALT	.FILL	R3FINAL
+R4FINALT	.FILL	R4FINAL
+R0FINALT	.FILL	R0FINAL
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+SALTO	LD	R3,CONSTAT
+	LDR	R3,R3,#0
+	LD	R4,TEXTOT
+	ST	R4,R4FINALT
+	LD	R0,CODIGOT
+	ST	R0,R0FINALT
+	
+	
+CLCF	ST	R3,R3FINALT
+	LD	R4,R4FINALT
+	JSR	REEMPLAZO2
+	ST	R4,R4FINALT
+	JSR	SUBC
+	JSR	RONDAS	
+	LD  	R0,R0FINALT
+	JSR	PRINT
+	LD	R3,R3FINALT
+	ADD	R3,R3,#-15
+	ADD	R3,R3,#-1
+	BRP	CLCF
+	BR 	SIGUE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+SUBC	ST	R7,COPYR7T5
+	LD	R0,CLAVEST     ;GENERAMOS COPIAS 
+	ST	R0,COPIAR0T    
+	
+	LD	R2,CLAVET
+	ST	R2,COPIAR2T
+
+	LD	R2,RCONT
+	ST	R2,COPIAR2T1
+
+	LD	R4,CLAVEST
+	ST	R4,COPIAR4T
+
+	LD	R4,SBOXT
+	ST	R4,COPIAR4T1
+	
+	AND	R3,R3,#0
+	ADD	R3,R3,#10     ;NUMERO DE SUBCLAVES
+
+	ST	R3,COPIAR3T
+CLC	ST	R3,COPIAR3T
+	LD	R2,COPIAR2T
+	LD	R4,COPIAR4T
+	JSR	ROTWORD
+
+	LD	R0,COPIAR0T
+	LD	R4,COPIAR4T1
+	AND    R5,R5,#0
+	ADD    R5,R5,#4   ;R5 DEFINE CUANTAS  VECES SE HAR� SUBBYTES
+	JSR    sBytes
+		
+	LD	R2,COPIAR2T
+	LD	R4,COPIAR4T
+	JSR	XORC
+
+	LD	R2,COPIAR2T1
+	LD	R4,COPIAR4T
+	JSR	XORC
+
+	AND	R6,R6,#0
+	ADD	R6,R6,#3
+	LD	R2,COPIAR2T
+	LD	R4,COPIAR4T
+	
+CICLOS	ADD	R2,R2,#4	
+	JSR	XORCC
+	ADD	R6,R6,#-1
+	BRP	CICLOS
+	
+	ADD	R2,R2,#5         ;COPIAR2T PRIMERA CLAVE
+	ST	R2,COPIAR2T
+
+	LD	R2,COPIAR2T1     ;MOVEMOS RCON CUATRO POSICIONES EN CADA CICLO
+	ADD	R2,R2,#4
+	ST	R2,COPIAR2T1
+	
+	ADD	R4,R4,#5
+	ST	R4,COPIAR4T      ;COPIAR4T Y COPIAR0T SEGUNDA CLAVE
+	ST	R4,COPIAR0T
+
+	LD	R3,COPIAR3T
+	ADD	R3,R3,#-1
+	BRP	CLC
+	
+	LD	R7,COPYR7T5
+	RET
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+SIGUE	BR  SIGUE2 
+
+COPYR7T8	.FILL	COPYR78
+
+RONDAS 	ST  R7,COPYR7T8
+	LD  R2,CLAVET
+    	ST  R2,COPIAR2T
+
+    	LD  R4,CODIGOT
+        ST  R4,COPIAR4T
+
+        LD  R4,SBOXT
+    	ST  R4,COPIAR4T1
+    
+    	AND R3,R3,#0
+    	ADD R3,R3,#9     ;NUMERO DE RONDAS
+	ST R3,COPIAR3T 
+
+ROND   	LD  R2,COPIAR2T ;ClaveT
+    	LD  R4,COPIAR4T ;CodigoT
+    	JSR ADDROUNDKEY
+    	
+YA	LD  R0,COPIAR4T   ;Matriz que se recibe de AddRoundKey
+    	LD  R4,COPIAR4T1  ;Sbox
+    	AND R5,R5,#0
+    	ADD R5,R5,#15
+    	ADD R5,R5,#1   ;R5 DEFINE CUANTAS  VECES SE HAR? SUBBYTES
+    	JSR sBytes
+
+    	LD  R2,COPIAR4T
+    	JSR SHIFTROWS
+
+    	LD  R2,COPIAR4T      
+    	LD  R4,GALOIST
+    	JSR MIXCOLUMN
+	
+	LD  R2,COPIAR4T
+	JSR REEMPLAZO
+
+	LD  R2,COPIAR2T ;ClaveT
+	ADD R2,R2,#15
+	ADD R2,R2,#2
+	ST  R2,COPIAR2T
+	LD  R4,COPIAR4T
+	JSR ADDROUNDKEY
+
+    	LD  R3,COPIAR3T
+    	ADD R3,R3,#-1
+	ST R3,COPIAR3T
+	ADD R3,R3,#0
+    	BRp YA
+	
+	LD  R0,COPIAR4T   ;Matriz que se recibe de AddRoundKey
+    	LD  R4,COPIAR4T1  ;Sbox
+    	AND R5,R5,#0
+    	ADD R5,R5,#15
+    	ADD R5,R5,#1   ;R5 DEFINE CUANTAS  VECES SE HAR? SUBBYTES
+    	JSR sBytes
+
+	LD  R2,COPIAR4T
+    	JSR SHIFTROWS
+
+    	LD  R2,COPIAR2T ;ClaveT
+	ADD R2,R2,#15
+	ADD R2,R2,#2
+    	LD  R4,COPIAR4T ;CodigoT
+	JSR ADDROUNDKEY
+
+	LD  	R7,COPYR7T8	
+	RET
+
+SIGUE2  BR	SALTO2
+
+
+COLUMNAST    .FILL	COLUMNAS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+PRINT
+    AND R3,R3,#0
+    ADD R3,R3,#15
+    ADD R3,R3,#1
+    ST  R0,SaveR0
+    ST	R7,SaveR7
+GO  JSR BYTE
+    ADD R1,R1,#-9
+    BRp SALTOR1
+    ADD R1,R1,#12
+    ADD R1,R1,#15
+    ADD R1,R1,#15
+    ADD R1,R1,#15
+    AND R0,R0,#0
+    ADD R0,R0,R1
+    OUT
+ACTR2 AND R0,R0,#0
+    ADD R2,R2,#-9
+    BRp SALTOR2
+    ADD R2,R2,#12
+    ADD R2,R2,#15
+    ADD R2,R2,#15
+    ADD R2,R2,#15
+    ADD R0,R0,R2
+    OUT
+    BR  ACT
+SALTOR1
+    ADD R1,R1,#9
+    ADD R1,R1,#15
+    ADD R1,R1,#15
+    ADD R1,R1,#15
+    ADD R1,R1,#10
+    AND R0,R0,#0
+    ADD R0,R0,R1
+    OUT 
+    BR	ACTR2  
+SALTOR2
+    ADD R2,R2,#9
+    ADD R2,R2,#15
+    ADD R2,R2,#15
+    ADD R2,R2,#15
+    ADD R2,R2,#10
+    AND R0,R0,#0
+    ADD R0,R0,R2
+    OUT 
+    BR  ACT
+ACT LD  R0,SaveR0
+    ADD R0,R0,#1
+    ST  R0,SaveR0
+    ADD R3,R3,#-1
+    BRp GO
+    LD  R7,SaveR7
+    RET
+
+SaveR7      .BLKW	1
+SaveR0      .BLKW	1
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+sBytes  ST     R7,sbSaveR7
+        ST     R0,sbSaveR0
+        ST     R4,sbSaveR4
+        ST     R5,sbSaveR5
+START   JSR    BYTE
+        ADD    R2,R2,#-1    ;Encuentro el # de veces que tengo que recorrer las 16 pos completas
+        BRn    NEGA
+        BRz    CERO
+        BRp    POS
+NEGA    ADD    R4,R4,R1     ;Me muevo R1 pos de memoria para pararme en las filas
+        BRnzp  FNsb
+CERO    ADD    R4,R4,R1     ;Me muevo R1 pos de memoria para pararme en las filas        
+        ADD    R4,R4,R1 
+        AND    R5,R5,#0
+        ADD    R5,R5,#15
+        ADD    R5,R5,#1
+        NOT    R1,R1
+        ADD    R1,R1,#1
+        ADD    R5,R5,R1     ;Le resto los bits mas significativos
+        ADD    R4,R4,R5     ;Me muevo por sBox
+        BRnzp  FNsb
+POS     ADD    R4,R4,R1     ;Me muevo R1 pos de memoria para pararme en las filas 
+        ADD    R4,R4,R1 
+        AND    R5,R5,#0
+        ADD    R5,R5,#15
+        ADD    R5,R5,#1
+        NOT    R1,R1
+        ADD    R1,R1,#1
+        ADD    R5,R5,R1     ;Le resto los bits mas significativos
+        ADD    R4,R4,R5     ;Me muevo por sBox
+sbLOOP  LDI    R3,COLUMNAST		
+ 	ADD    R4,R4,R3
+        ADD    R2,R2,#-1
+        BRp    sbLOOP
+FNsb    AND    R1,R1,#0
+        LDR    R1,R4,#0     ;Almaceno el valor de sBox a reemplazar
+        LD     R5,sbSaveR5
+        STR    R1,R0,#0     ;Guardo el valor de sBox
+        ADD    R0,R0,#1     ;Me muevo en la matriz del codigo
+        LD     R4,SBOXT     ;Reestablezo el puntero a sBoxT
+        ADD    R5,R5,#-1    ;Verifico si ya recorri toda la matriz
+        BRnz   FIN
+        ST     R5,sbSaveR5
+        BRnzp  START
+FIN     LD     R7,sbSaveR7
+        LD     R0,sbSaveR0
+        LD     R4,sbSaveR4
+        RET
+        
+SALTO2	BR SALTO3
+
+
+COLUMNAS    .FILL	16
+sbSaveR7    .BLKW	1
+sbSaveR0    .BLKW	1
+sbSaveR4    .BLKW	1
+sbSaveR5    .BLKW	1  
+
+
+
+BYTE    ST     R7,byteSaveR7
+        ST     R3,byteSaveR3   ;nop
+        ST     R4,byteSaveR4
+	AND    R2,R2,#0
+	AND    R1,R1,#0
+	AND    R3,R3,#0
+	AND    R4,R4,#0	    
+	AND    R5,R5,#0
+	AND    R6,R6,#0     ;nop
+	ADD    R5,R5,#15
+	ADD    R5,R5,#1	    ;nop    
+	NOT    R4,R5	   
+	ADD    R4,R4,#1	        
+	ADD    R1,R1,#-1     ;nop
+	LDR    R3,R0,#0	       
+	AND    R2,R3,#15       
+CICLO2	ADD    R1,R1,#1
+	ADD    R3,R3,R4
+	BRn    TERMINA
+	ADD    R5,R5,#-1
+	BRp    CICLO2	
+TERMINA	LD     R3,byteSaveR3
+        LD     R4,byteSaveR4
+        LD     R7,byteSaveR7
+	RET
+	
+byteSaveR3     .BLKW	1
+byteSaveR4     .BLKW	1
+byteSaveR7     .BLKW	1
+COPYR7T6	.FILL	COPYR76
+
+SALTO3	BR	SALTO4
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+DESPLAZO	ST	R7,COPYR7T6
+		
+		LDR	R1,R2,#0
+		LDR	R3,R2,#4
+		LDR	R5,R2,#8
+		LDR	R6,R2,#12
+		STR	R1,R2,#12
+		STR     R3,R2,#0
+		STR	R5,R2,#4
+		STR	R6,R2,#8
+		LD	R7,COPYR7T6
+		RET
+COPYRR7T2  .FILL COPYRR72
+
+SHIFTROWS	ST	R7,COPYRR7T2
+		ADD	R2,R2,#1
+		JSR	DESPLAZO
+		ADD	R2,R2,#1
+		JSR	DESPLAZO
+		JSR	DESPLAZO		
+		ADD	R2,R2,#1
+		JSR	DESPLAZO
+		JSR	DESPLAZO
+		JSR	DESPLAZO
+		LD	R7,COPYRR7T2
+		RET
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+COPYR0T	  .FILL COPYR0
+COPYR1T	  .FILL COPYR1
+COPYR2T	  .FILL COPYR2
+COPYR3T	  .FILL COPYR3
+COPYR4T	  .FILL COPYR4
+
+COPYR5T	  .FILL COPYR5
+
+COPYR6T	  .FILL COPYR6
+GALOIST	  .FILL GALOIS
+MIXT	  .FILL MIX
+COPYR7T4  .FILL COPYR74
+COPYR7T3  .FILL COPYR73
+COPYR7T7  .FILL COPYR77
+
+COPIAST	  .FILL COPIAS
+CPT6	  .FILL	CP6
+
+RO25	ST	R7,COPYR7T7
+	ST	R6,CPT6
+	AND	R5,R5,#0
+	AND	R6,R6,#0
+	ADD	R5,R5,#15
+	ADD	R5,R5,#1
+	ADD	R6,R6,#4
+CICL3	ADD	R5,R5,R5
+	ADD	R6,R6,#-1
+	BRp	CICL3
+	ADD	R5,R5,#-1
+	LD	R6,CPT6
+	LD	R7,COPYR7T7
+	
+	RET
+
+MULTIPLICAR	ST	R7,COPYRR7T2
+		LDR	R1,R2,#0      ;CARACTER MATRIZ CONVERTIDA
+		ST	R1,COPYR1T
+		AND	R5,R5,#0
+		AND	R6,R6,#0
+		ADD	R5,R5,#15
+		ADD	R5,R5,#1
+		ADD	R6,R6,#3
+	CICL1	ADD	R5,R5,R5
+		ADD	R6,R6,#-1
+		BRp	CICL1
+		ADD	R5,R5,#-1
+		AND	R5,R5,R1		
+		JSR	XOR
+		ADD	R1,R1,R1
+		BRP	UNO
+
+		LDR	R6,R4,#0      ;CARACTER DE GALOIS PARA MULTIPLICAR
+		LD	R1,COPYR1T
+		ADD	R6,R6,#-1
+		BRz	TERMIN
+		ADD	R1,R1,R1
+		ADD	R6,R6,#-1
+		BRz	TERMIN
+		LDR	R6,R2,#0
+		AND	R5,R5,#0
+		ADD	R5,R5,R6
+		JSR	XOR
+		BR	TERMIN		
+
+	UNO	LDR	R6,R4,#0      ;CARACTER DE GALOIS PARA MULTIPLICAR
+		LD	R1,COPYR1T
+		ADD	R6,R6,#-1
+		BRz	TERMIN        ;SI SALTA ES POR QUE SE MULTIPLIC� POR UNO RETURNA R1 IGUAL AL MISMO VALOR
+		AND	R5,R5,#0
+		ADD	R5,R5,#12
+		ADD	R5,R5,#15	;R5=0001 1011
+		ADD	R1,R1,R1      ;Desplazo el caracter una posicion a la izquierda
+		JSR	XOR
+		JSR	RO25
+		AND	R1,R1,R5	
+		ADD	R6,R6,#-1
+		BRz     TERMIN	      ;SI SALTA ES POR QUE SE MULTIPLIC� POR DOS
+		LDR	R6,R2,#0
+		AND	R5,R5,#0
+		ADD	R5,R5,R6	
+		JSR	XOR 
+		JSR	RO25
+		AND	R1,R1,R5
+	TERMIN	LD	R7,COPYRR7T2
+		RET
+
+SUMAXOR		ST	R7,COPYR7T3
+		LD	R0,COPIAST
+		AND	R5,R5,#0
+		ADD	R5,R5,#4
+	
+	LOOP1	ST	R5,COPYR5T
+		JSR	MULTIPLICAR
+		STR	R1,R0,#0
+		ADD	R4,R4,#4
+		ADD	R2,R2,#1
+		ADD	R0,R0,#1
+		LD	R5,COPYR5T
+		ADD	R5,R5,#-1
+		BRp	LOOP1
+		
+		AND 	R1,R1,#0
+		AND	R5,R5,#0
+		LD	R0,COPIAST
+		LDR	R1,R0,#0
+		LDR	R5,R0,#1
+		JSR	XOR
+		STR	R1,R0,#0
+		LDR	R1,R0,#2
+		LDR	R5,R0,#3
+		JSR	XOR
+		STR	R1,R0,#1
+		LDR	R1,R0,#0
+		LDR	R5,R0,#1
+		JSR	XOR
+
+		LD	R7,COPYR7T3
+		RET
+
+MIXCOLUMN	ST	R7,COPYR7T4
+		LD	R0,MIXT
+		ST	R0,COPYR0T
+		AND	R6,R6,#0
+		AND	R3,R3,#0
+		ADD	R6,R6,#4
+		ADD	R3,R3,#4
+		ST	R3,COPYR3T
+		ST	R2,COPYR2T
+		
+
+
+	C1	ST	R6,COPYR6T
+		ST	R4,COPYR4T
+		
+		LD	R2,COPYR2T
+		JSR	SUMAXOR
+
+		LD	R0,COPYR0T
+		STR	R1,R0,#0     ;CARGAMOS LA MULTIPLICACION EN UNA MATRIZ LLAMADA MIX
+		ADD	R0,R0,#1   
+		ST	R0,COPYR0T
+		LD	R4,COPYR4T
+		ADD	R4,R4,#1
+		ST	R4,COPYR4T
+		LD	R6,COPYR6T
+		ADD	R6,R6,#-1
+		BRp	C1
+
+		LD	R4,GALOIST
+		LD	R2,COPYR2T
+		ADD	R2,R2,#4
+		ST	R2,COPYR2T
+		LD	R3,COPYR3T
+		AND	R6,R6,#0
+		ADD	R6,R6,#4
+		ST	R6,COPYR6T  
+		ADD	R3,R3,#-1
+		ST	R3,COPYR3T
+		BRp	C1		
+
+		LD	R7,COPYR7T4
+		RET
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+SALTO4
+
+HALT
+
+MSG	.STRINGZ "Ingrese longitud: "
+CLAVE 	.STRINGZ "HincapieValencia"
+CLAVES	.BLKW	 170
+CADENA	.BLKW	 5
+CONSTA	.BLKW	1
+CODIGO	.BLKW    17
+GALOIS	.BLKW	17
+MIX	.BLKW	17
+SBOX    .BLKW	256
+COPYR7  .BLKW	1
+COPYR0  .BLKW	1
+COPYR1  .BLKW	1
+COPIAR3	.BLKW	1
+COPIAR2	.BLKW	1
+COPIAR21 .BLKW	1
+COPIAR4	.BLKW	1
+COPIAR41 .BLKW	1
+COPIAR0	.BLKW	1
+COPYR2  .BLKW	1
+COPYRR2 .BLKW	1
+CP6	.BLKW	1
+COPYR3  .BLKW	1
+COPYR4  .BLKW	1
+COPYR5  .BLKW	1
+COPYR6  .BLKW	1
+COPYR61 .BLKW	1
+COPYR72 .BLKW	1
+COPYRR72 .BLKW 	1
+COPYR73 .BLKW	1
+COPYR74 .BLKW	1
+COPYR75 .BLKW	1
+COPYR76 .BLKW	1
+COPYR77 .BLKW	1
+COPYR78	.BLKW	1
+R0FINAL	.BLKW	1
+R3FINAL	.BLKW	1
+R4FINAL	.BLKW	1
+COPIAS  .BLKW   5
+RCON	.BLKW	41
+TEXTO	.BLKW	1024
+.END 
